@@ -1,55 +1,25 @@
-# Discord Bot Modular (ESM)
+# OpenZero 🚀
+**OpenZero** adalah bot Discord modular yang dirancang sebagai asisten riset dan pengembangan (R&D). Bot ini menghubungkan pengguna langsung ke berbagai sumber data terbuka (*Open Data*) melalui perintah teks sederhana.
 
-Bot Discord sederhana yang dibangun menggunakan **Discord.js v14** dengan struktur **Modular Command Handler** dan mendukung **ES Modules (ESM)**.
+## 🌟 Fitur Utama
+- **arXiv Search (`!arxiv`)**: Cari makalah ilmiah di bidang fisika, matematika, komputer, dll.
+- **Wikipedia (`!wikipedia`)**: Ringkasan artikel Wikipedia langsung di Discord.
+- **Open Library (`!openlibrary`)**: Akses katalog jutaan buku digital.
+- **Nerd Fonts (`!nerdfont` / `!nf`)**: Cari dan download font ikonik untuk developer (Zip & GitHub link).
+- **Interactive UI**: Menggunakan tombol navigasi dan skema warna High-Tech Cyan (`#20f0f2`).
 
-## Fitur
-- **Modular Commands**: Perintah dipisahkan ke dalam folder `/commands`.
-- **ES Modules**: Menggunakan sintaks `import/export` terbaru.
-- **Prefix Command**: Menggunakan prefix `!` untuk menjalankan perintah.
-- **Activity Status**: Status bot kustom otomatis saat aktif.
-- **Wikipedia Integration**: Pencarian informasi langsung dari Wikipedia dengan navigasi halaman.
-- **Open Library Integration**: Mencari koleksi buku di seluruh dunia melalui Open Library API.
-- **ArXiv Integration**: Mencari makalah ilmiah dan jurnal akademik di arXiv.
+## 🛠️ Stack Teknologi
+- **Node.js v18+** & **Discord.js v14** (ES Modules)
+- **Python 3** (Helper API scripts)
+- **urllib/json** untuk pengambilan data real-time.
 
-## Prasyarat
-- Node.js v16.11.0 ke atas.
-- Akun Discord Developer Portal.
+## 🚀 Cara Menjalankan
+1. Clone repositori ini.
+2. Buat file `.env` dan masukkan `DISCORD_TOKEN`.
+3. Jalankan `npm install`.
+4. Jalankan bot dengan `node index.js`.
 
-## Cara Instalasi
-
-1. **Clone repository ini:**
-   ```bash
-   git clone <url-repository>
-   cd open-0
-   ```
-
-2. **Instal dependensi:**
-   ```bash
-   npm install
-   ```
-
-3. **Konfigurasi Environment:**
-   Buat file `.env` di root direktori dan masukkan token bot Anda:
-   ```env
-   DISCORD_TOKEN=your_token_here
-   ```
-
-4. **Aktifkan Message Content Intent:**
-   Pastikan Anda mengaktifkan **Message Content Intent** di [Discord Developer Portal](https://discord.com/developers/applications) pada bagian **Bot**.
-
-## Cara Menjalankan
-```bash
-node index.js
-```
-
-## Menambahkan Perintah Baru
-Cukup buat file `.js` baru di dalam folder `commands/` dengan format:
-```javascript
-export default {
-    name: 'nama-command',
-    description: 'Penjelasan command',
-    execute(message, args) {
-        message.reply('Halo!');
-    },
-};
-```
+## 📂 Struktur Folder
+- `commands/`: Logika perintah Discord.
+- `API/`: Skrip Python untuk fetching data eksternal.
+- `index.js`: Entry point utama bot.

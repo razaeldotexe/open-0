@@ -23,15 +23,22 @@ client.commands = new Collection();
 
 // Command Handler (Memuat semua file .js di folder /commands)
 const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
     const filePath = pathToFileURL(path.join(commandsPath, file)).href;
     const { default: command } = await import(filePath);
-    
+
     if (command && command.name) {
         client.commands.set(command.name, command);
         console.log(`✅ Loaded command: ${command.name}`);
+
+        // Tambah dukungan alias
+        if (command.aliases && Array.isArray(command.aliases)) {
+            command.aliases.forEach((alias) => {
+                client.commands.set(alias, command);
+            });
+        }
     } else {
         console.log(`⚠️ Skip file: ${file} (missing name)`);
     }
@@ -40,10 +47,10 @@ for (const file of commandFiles) {
 // Event saat bot aktif
 client.once(Events.ClientReady, (readyClient) => {
     console.log(`Bot berhasil aktif! Login sebagai ${readyClient.user.tag}`);
-    
+
     // Aktivitas bot
-    readyClient.user.setActivity('.help | All endpoints have been collected.', { 
-        type: ActivityType.Playing 
+    readyClient.user.setActivity('!help | Searching Open Data', {
+        type: ActivityType.Playing,
     });
 });
 

@@ -1,9 +1,9 @@
-import { 
-    EmbedBuilder, 
-    ActionRowBuilder, 
-    ButtonBuilder, 
-    ButtonStyle, 
-    ComponentType 
+import {
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentType,
 } from 'discord.js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -15,24 +15,26 @@ export default {
     description: 'Cari informasi di Wikipedia dengan tampilan keren',
     async execute(message, args) {
         if (!args.length) {
-            return message.reply('❌ Mohon berikan kata kunci pencarian. Contoh: `!wikipedia Discord`');
+            return message.reply(
+                'Mohon berikan kata kunci pencarian. Contoh: `!wikipedia Discord`'
+            );
         }
 
         const query = args.join(' ');
-        const loadingMsg = await message.reply('🔍 Sedang mengumpulkan data dari Wikipedia...');
+        const loadingMsg = await message.reply('Sedang mengumpulkan data dari Wikipedia...');
 
         try {
             const { stdout, stderr } = await execPromise(`python API/wiki_fetcher.py "${query}"`);
 
             if (stderr) {
                 console.error('Python Error:', stderr);
-                return loadingMsg.edit('❌ Terjadi kesalahan teknis saat mengambil data.');
+                return loadingMsg.edit('Terjadi kesalahan teknis saat mengambil data.');
             }
 
             const data = JSON.parse(stdout);
 
             if (data.error) {
-                return loadingMsg.edit(`❌ ${data.error}`);
+                return loadingMsg.edit(data.error);
             }
 
             // Membagi teks menjadi beberapa halaman
@@ -49,23 +51,26 @@ export default {
 
             const createEmbed = (pageIndex) => {
                 const embed = new EmbedBuilder()
-                    .setColor('#3498db') // Warna Biru Wikipedia
-                    .setAuthor({ 
-                        name: `Diminta oleh ${message.author.username}`, 
-                        iconURL: message.author.displayAvatarURL({ dynamic: true }) 
+                    .setColor('#20f0f2') // Warna Biru Wikipedia
+                    .setAuthor({
+                        name: `Diminta oleh ${message.author.username}`,
+                        iconURL: message.author.displayAvatarURL({ dynamic: true }),
                     })
-                    .setTitle(`📚 ${data.title}`)
+                    .setTitle(data.title)
                     .setURL(data.fullurl)
-                    .setThumbnail('https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png')
+                    .setThumbnail(
+                        'https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png'
+                    )
                     .setDescription(pages[pageIndex] + (pages.length > 1 ? '...' : ''))
-                    .addFields({ 
-                        name: '🔗 Tautan Lengkap', 
-                        value: `[Klik di sini untuk baca selengkapnya](${data.fullurl})`, 
-                        inline: false 
+                    .addFields({
+                        name: 'Tautan Lengkap',
+                        value: `[Klik di sini untuk baca selengkapnya](${data.fullurl})`,
+                        inline: false,
                     })
-                    .setFooter({ 
+                    .setFooter({
                         text: `Halaman ${pageIndex + 1} dari ${pages.length} • Wikipedia Indonesia`,
-                        iconURL: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png'
+                        iconURL:
+                            'https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png',
                     })
                     .setTimestamp();
 
@@ -77,13 +82,11 @@ export default {
                     new ButtonBuilder()
                         .setCustomId('prev')
                         .setLabel('Sebelumnya')
-                        .setEmoji('⬅️')
                         .setStyle(ButtonStyle.Primary)
                         .setDisabled(pageIndex === 0),
                     new ButtonBuilder()
                         .setCustomId('next')
                         .setLabel('Berikutnya')
-                        .setEmoji('➡️')
                         .setStyle(ButtonStyle.Primary)
                         .setDisabled(pageIndex === pages.length - 1)
                 );
@@ -97,16 +100,16 @@ export default {
             const response = await loadingMsg.edit(options);
 
             if (pages.length > 1) {
-                const collector = response.createMessageComponentCollector({ 
-                    componentType: ComponentType.Button, 
-                    time: 120000 // Aktif selama 2 menit
+                const collector = response.createMessageComponentCollector({
+                    componentType: ComponentType.Button,
+                    time: 120000, // Aktif selama 2 menit
                 });
 
                 collector.on('collect', async (interaction) => {
                     if (interaction.user.id !== message.author.id) {
-                        return interaction.reply({ 
-                            content: 'Anda tidak memiliki akses ke navigasi ini.', 
-                            ephemeral: true 
+                        return interaction.reply({
+                            content: 'Anda tidak memiliki akses ke navigasi ini.',
+                            ephemeral: true,
                         });
                     }
 
@@ -115,21 +118,24 @@ export default {
 
                     await interaction.update({
                         embeds: [createEmbed(currentPage)],
-                        components: [createButtons(currentPage)]
+                        components: [createButtons(currentPage)],
                     });
                 });
 
                 collector.on('end', () => {
                     const disabledRow = new ActionRowBuilder().addComponents(
-                        new ButtonBuilder().setCustomId('p').setLabel('Selesai').setStyle(ButtonStyle.Secondary).setDisabled(true)
+                        new ButtonBuilder()
+                            .setCustomId('p')
+                            .setLabel('Selesai')
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(true)
                     );
                     response.edit({ components: [disabledRow] }).catch(() => {});
                 });
             }
-
         } catch (error) {
             console.error('Execution Error:', error);
-            loadingMsg.edit('❌ Gagal menghubungi layanan Wikipedia.');
+            loadingMsg.edit('Gagal menghubungi layanan Wikipedia.');
         }
     },
 };

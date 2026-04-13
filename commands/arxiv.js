@@ -1,9 +1,9 @@
-import { 
-    EmbedBuilder, 
-    ActionRowBuilder, 
-    ButtonBuilder, 
-    ButtonStyle, 
-    ComponentType 
+import {
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentType,
 } from 'discord.js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -15,11 +15,13 @@ export default {
     description: 'Cari makalah ilmiah di arXiv',
     async execute(message, args) {
         if (!args.length) {
-            return message.reply('❌ Mohon berikan kata kunci pencarian. Contoh: `!arxiv quantum computing`');
+            return message.reply(
+                'Mohon berikan kata kunci pencarian. Contoh: `!arxiv quantum computing`'
+            );
         }
 
         const query = args.join(' ');
-        const loadingMsg = await message.reply('🔍 Sedang mencari makalah di arXiv...');
+        const loadingMsg = await message.reply('Sedang mencari makalah di arXiv...');
 
         try {
             // Gunakan kutipan ganda untuk menangani spasi dalam query
@@ -27,17 +29,17 @@ export default {
 
             if (stderr) {
                 console.error('ArXiv Python Error:', stderr);
-                return loadingMsg.edit('❌ Terjadi kesalahan teknis saat mengambil data.');
+                return loadingMsg.edit('Terjadi kesalahan teknis saat mengambil data.');
             }
 
             const data = JSON.parse(stdout);
 
             if (data.error) {
-                return loadingMsg.edit(`❌ ${data.error}`);
+                return loadingMsg.edit(data.error);
             }
 
             if (!Array.isArray(data) || data.length === 0) {
-                return loadingMsg.edit(`❌ Tidak ada makalah yang ditemukan untuk "${query}".`);
+                return loadingMsg.edit(`Tidak ada makalah yang ditemukan untuk "${query}".`);
             }
 
             const papers = data;
@@ -46,26 +48,33 @@ export default {
             const createEmbed = (idx) => {
                 const paper = papers[idx];
                 const authors = paper.authors.join(', ');
-                const summary = paper.summary.length > 800 ? paper.summary.slice(0, 800) + '...' : paper.summary;
+                const summary =
+                    paper.summary.length > 800
+                        ? paper.summary.slice(0, 800) + '...'
+                        : paper.summary;
 
                 return new EmbedBuilder()
-                    .setColor('#B31B1B') // Warna khas arXiv
-                    .setAuthor({ 
-                        name: `Diminta oleh ${message.author.username}`, 
-                        iconURL: message.author.displayAvatarURL({ dynamic: true }) 
+                    .setColor('#20f0f2') // Warna khas arXiv
+                    .setAuthor({
+                        name: `Diminta oleh ${message.author.username}`,
+                        iconURL: message.author.displayAvatarURL({ dynamic: true }),
                     })
                     .setTitle(paper.title)
                     .setURL(paper.entry_id)
                     .setDescription(summary)
                     .addFields(
-                        { name: '✍️ Penulis', value: authors.length > 256 ? authors.slice(0, 250) + '...' : authors },
-                        { name: '📅 Terbit', value: paper.published, inline: true },
-                        { name: '🏷️ Kategori', value: paper.primary_category, inline: true },
-                        { name: '📄 PDF', value: `[Buka PDF](${paper.pdf_url})`, inline: true }
+                        {
+                            name: 'Penulis',
+                            value: authors.length > 256 ? authors.slice(0, 250) + '...' : authors,
+                        },
+                        { name: 'Terbit', value: paper.published, inline: true },
+                        { name: 'Kategori', value: paper.primary_category, inline: true },
+                        { name: 'PDF', value: `[Buka PDF](${paper.pdf_url})`, inline: true }
                     )
-                    .setFooter({ 
+                    .setFooter({
                         text: `Hasil ${idx + 1} dari ${papers.length} | arXiv API`,
-                        iconURL: 'https://static.arxiv.org/static/browse/0.3.4/images/icons/apple-touch-icon.png'
+                        iconURL:
+                            'https://static.arxiv.org/static/browse/0.3.4/images/icons/apple-touch-icon.png',
                     })
                     .setTimestamp();
             };
@@ -75,13 +84,11 @@ export default {
                     new ButtonBuilder()
                         .setCustomId('prev_paper')
                         .setLabel('Sebelumnya')
-                        .setEmoji('⬅️')
                         .setStyle(ButtonStyle.Primary)
                         .setDisabled(idx === 0),
                     new ButtonBuilder()
                         .setCustomId('next_paper')
                         .setLabel('Berikutnya')
-                        .setEmoji('➡️')
                         .setStyle(ButtonStyle.Primary)
                         .setDisabled(idx === papers.length - 1)
                 );
@@ -95,9 +102,9 @@ export default {
             const responseMsg = await loadingMsg.edit(options);
 
             if (papers.length > 1) {
-                const collector = responseMsg.createMessageComponentCollector({ 
-                    componentType: ComponentType.Button, 
-                    time: 120000 
+                const collector = responseMsg.createMessageComponentCollector({
+                    componentType: ComponentType.Button,
+                    time: 120000,
                 });
 
                 collector.on('collect', async (interaction) => {
@@ -110,21 +117,24 @@ export default {
 
                     await interaction.update({
                         embeds: [createEmbed(currentIdx)],
-                        components: [createButtons(currentIdx)]
+                        components: [createButtons(currentIdx)],
                     });
                 });
 
                 collector.on('end', () => {
                     const disabledRow = new ActionRowBuilder().addComponents(
-                        new ButtonBuilder().setCustomId('done').setLabel('Pencarian Selesai').setStyle(ButtonStyle.Secondary).setDisabled(true)
+                        new ButtonBuilder()
+                            .setCustomId('done')
+                            .setLabel('Pencarian Selesai')
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(true)
                     );
                     responseMsg.edit({ components: [disabledRow] }).catch(() => {});
                 });
             }
-
         } catch (error) {
             console.error('ArXiv Error:', error);
-            loadingMsg.edit('❌ Terjadi kesalahan saat memproses data arXiv.');
+            loadingMsg.edit('Terjadi kesalahan saat memproses data arXiv.');
         }
     },
 };
