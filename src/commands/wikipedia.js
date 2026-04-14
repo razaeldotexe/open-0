@@ -14,20 +14,24 @@ import Logger from '../utils/logger.js';
 async function handleFetchResponse(response, context = '') {
     if (!response.ok) {
         const text = await response.text();
-        Logger.error(`API Error (${context}): Status ${response.status}. Response: ${text.slice(0, 100)}...`);
+        Logger.error(
+            `API Error (${context}): Status ${response.status}. Response: ${text.slice(0, 100)}...`
+        );
         throw new Error(`API service returned an error: ${response.status}`);
     }
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
-        Logger.error(`Expected JSON but got: ${contentType} in ${context}. Content preview: ${text.slice(0, 100)}...`);
+        Logger.error(
+            `Expected JSON but got: ${contentType} in ${context}. Content preview: ${text.slice(0, 100)}...`
+        );
         throw new Error('API returned HTML instead of JSON. Check if your API_URL is correct.');
     }
     return response.json();
 }
 
 const API_HEADERS = {
-    'User-Agent': 'OpenZeroBot/1.0 (DiscordBot; +https://github.com/razaeldotexe/open-0)'
+    'User-Agent': 'OpenZeroBot/1.0 (DiscordBot; +https://github.com/razaeldotexe/open-0)',
 };
 
 export default {
@@ -44,9 +48,12 @@ export default {
         const loadingMsg = await message.reply('Sedang mengumpulkan data dari Wikipedia...');
 
         try {
-            const response = await fetch(`${config.apiUrl}/wikipedia?q=${encodeURIComponent(query)}&lang=id`, {
-                headers: API_HEADERS
-            });
+            const response = await fetch(
+                `${config.apiUrl}/wikipedia?q=${encodeURIComponent(query)}&lang=id`,
+                {
+                    headers: API_HEADERS,
+                }
+            );
             const data = await handleFetchResponse(response, 'Wikipedia Search');
 
             if (data.error) {
