@@ -74,6 +74,26 @@ function processMarkdownToEmbeds(content, fileName) {
     return embeds;
 }
 
+/**
+ * Helper to handle fetch responses and check for JSON.
+ */
+async function handleFetchResponse(response, context = '') {
+    if (!response.ok) {
+        const text = await response.text();
+        Logger.error(`API Error (${context}): Status ${response.status}. Response: ${text.slice(0, 100)}...`);
+        throw new Error(`API service returned an error: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        Logger.error(`Expected JSON but got: ${contentType} in ${context}. Content preview: ${text.slice(0, 100)}...`);
+        throw new Error('API returned HTML instead of JSON. Check if your API_URL is correct and the service is awake.');
+    }
+
+    return response.json();
+}
+
 export async function fetchAllTutorialsRaw() {
     const { githubRepoOwner, githubRepoName, githubToken, apiUrl } = config;
 
@@ -89,7 +109,7 @@ export async function fetchAllTutorialsRaw() {
             }),
         });
 
-        const files = await response.json();
+        const files = await handleFetchResponse(response, 'Scan Github');
         if (files.error) throw new Error(files.error);
 
         const rawResults = new Map();
@@ -105,15 +125,22 @@ export async function fetchAllTutorialsRaw() {
                     path: file.path,
                 }),
             });
-            const fileData = await contentResp.json();
-            if (fileData.content) {
-                rawResults.set(file.name, fileData.content);
+            
+            if (contentResp.ok) {
+                const fileData = await handleFetchResponse(contentResp, `Fetch ${file.name}`);
+                if (fileData.content) {
+                    rawResults.set(file.name, fileData.content);
+                }
             }
         }
 
         return rawResults;
     } catch (error) {
-        Logger.error('Error fetching raw tutorials from Flask API:', error);
+        if (error.cause && error.cause.code === 'ECONNREFUSED') {
+            Logger.error('Flask API is not reachable. Is it running? URL:', apiUrl);
+            throw new Error('Could not connect to the tutorial API service.');
+        }
+        Logger.error('Error in fetchAllTutorialsRaw:', error.message);
         throw error;
     }
 }
@@ -133,7 +160,7 @@ export async function fetchAllTutorialsEmbeds() {
             }),
         });
 
-        const files = await response.json();
+        const files = await handleFetchResponse(response, 'Scan Github Embeds');
         if (files.error) throw new Error(files.error);
 
         const allResults = new Map();
@@ -149,16 +176,19 @@ export async function fetchAllTutorialsEmbeds() {
                     path: file.path,
                 }),
             });
-            const fileData = await contentResp.json();
-            if (fileData.content) {
-                const embeds = processMarkdownToEmbeds(fileData.content, file.name);
-                allResults.set(file.name, embeds);
+            
+            if (contentResp.ok) {
+                const fileData = await handleFetchResponse(contentResp, `Fetch Embed ${file.name}`);
+                if (fileData.content) {
+                    const embeds = processMarkdownToEmbeds(fileData.content, file.name);
+                    allResults.set(file.name, embeds);
+                }
             }
         }
 
         return allResults;
     } catch (error) {
-        Logger.error('Error fetching tutorials embeds from Flask API:', error);
+        Logger.error('Error in fetchAllTutorialsEmbeds:', error.message);
         throw error;
     }
 }
