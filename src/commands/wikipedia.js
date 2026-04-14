@@ -22,7 +22,9 @@ export default {
         const loadingMsg = await message.reply('Sedang mengumpulkan data dari Wikipedia...');
 
         try {
-            const response = await fetch(`${config.apiUrl}/wikipedia?q=${encodeURIComponent(query)}&lang=id`);
+            const response = await fetch(
+                `${config.apiUrl}/wikipedia?q=${encodeURIComponent(query)}&lang=id`
+            );
             const data = await response.json();
 
             if (data.error) {
@@ -88,10 +90,10 @@ export default {
                 options.components = [createButtons(0)];
             }
 
-            const response = await loadingMsg.edit(options);
+            const responseMsg = await loadingMsg.edit(options);
 
             if (pages.length > 1) {
-                const collector = response.createMessageComponentCollector({
+                const collector = responseMsg.createMessageComponentCollector({
                     componentType: ComponentType.Button,
                     time: 120000,
                 });
@@ -121,7 +123,7 @@ export default {
                             .setStyle(ButtonStyle.Secondary)
                             .setDisabled(true)
                     );
-                    response.edit({ components: [disabledRow] }).catch(() => {});
+                    responseMsg.edit({ components: [disabledRow] }).catch(() => {});
                 });
             }
         } catch (error) {
