@@ -24,89 +24,46 @@ app = Flask(__name__)
 # Landing Page Template
 INDEX_HTML = """
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenZero API | Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>OpenZero API</title>
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-        .hero { padding: 60px 0; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid #334155; }
-        .card { background-color: #1e293b; border: 1px solid #334155; color: #f8fafc; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); border-color: #38bdf8; }
-        .badge-get { background-color: #10b981; }
-        .badge-post { background-color: #3b82f6; }
-        code { color: #38bdf8; background: #0f172a; padding: 2px 6px; border-radius: 4px; }
-        .footer { padding: 40px 0; color: #94a3b8; font-size: 0.9rem; }
+        body { font-family: monospace; margin: 40px; background: #0f172a; color: #e2e8f0; }
+        h1 { color: #38bdf8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #334155; }
+        th { color: #38bdf8; }
+        code { background: #1e293b; padding: 2px 6px; border-radius: 3px; }
+        a { color: #38bdf8; text-decoration: none; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="hero text-center">
-        <div class="container">
-            <h1 class="display-4 fw-bold text-info">OpenZero API</h1>
-            <p class="lead text-secondary">Modular Research and Development Assistant API Service</p>
-            <div class="mt-4">
-                <span class="badge rounded-pill bg-success px-3 py-2">System Operational</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="container my-5">
-        <h2 class="mb-4">Available Endpoints</h2>
-        <div class="row g-4">
-            <!-- ArXiv -->
-            <div class="col-md-6">
-                <div class="card h-100 p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">arXiv Search</h4>
-                        <span class="badge badge-get">GET</span>
-                    </div>
-                    <p class="text-secondary">Search for scientific papers in physics, mathematics, and CS.</p>
-                    <code>/arxiv?q={query}</code>
-                </div>
-            </div>
-            <!-- Wikipedia -->
-            <div class="col-md-6">
-                <div class="card h-100 p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">Wikipedia</h4>
-                        <span class="badge badge-get">GET</span>
-                    </div>
-                    <p class="text-secondary">Get summaries and URLs from Wikipedia articles.</p>
-                    <code>/wikipedia?q={query}&lang={id|en}</code>
-                </div>
-            </div>
-            <!-- NerdFont -->
-            <div class="col-md-6">
-                <div class="card h-100 p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">Nerd Fonts</h4>
-                        <span class="badge badge-get">GET</span>
-                    </div>
-                    <p class="text-secondary">Search and retrieve download links for developer fonts.</p>
-                    <code>/nerdfont?q={query}</code>
-                </div>
-            </div>
-            <!-- Github Scan -->
-            <div class="col-md-6">
-                <div class="card h-100 p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">GitHub Scanner</h4>
-                        <span class="badge badge-post">POST</span>
-                    </div>
-                    <p class="text-secondary">Recursively scan repository contents for Markdown files.</p>
-                    <code>/github/scan</code>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="footer text-center">
-        <div class="container">
-            <p>&copy; 2026 OpenZero Project. Built with Flask & Gunicorn.</p>
-        </div>
-    </footer>
+    <h1>OpenZero API</h1>
+    <table>
+        <tr>
+            <th>File</th>
+            <th>Route</th>
+        </tr>
+        <tr>
+            <td><code>python/arXiv.py</code></td>
+            <td><a href="/arxiv?q=ai">/arxiv?q=</a></td>
+        </tr>
+        <tr>
+            <td><code>python/wiki.py</code></td>
+            <td><a href="/wikipedia?q=python">/wikipedia?q=&lang=</a></td>
+        </tr>
+        <tr>
+            <td><code>python/nerdfont.py</code></td>
+            <td><a href="/nerdfont?q=JetBrains">/nerdfont?q=</a></td>
+        </tr>
+        <tr>
+            <td><code>python/github.py</code></td>
+            <td><code>POST /github/scan</code>, <code>POST /github/content</code></td>
+        </tr>
+    </table>
 </body>
 </html>
 """
