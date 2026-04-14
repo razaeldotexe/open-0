@@ -2,7 +2,6 @@ import json
 import sys
 import urllib.request
 import urllib.error
-import base64
 
 def github_api_request(url, token=None):
     headers = {
@@ -19,17 +18,31 @@ def github_api_request(url, token=None):
     except urllib.error.URLError as e:
         return {"error": str(e)}
 
-def list_markdown_files(owner, repo, token=None, path=""):
+def scan_recursive(owner, repo, token=None, path=""):
+    """
+    Recursively scans the repository for all .md files.
+    """
     url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
     contents = github_api_request(url, token)
     
     if isinstance(contents, dict) and "error" in contents:
-        return contents
+        return []
         
     if not isinstance(contents, list):
-        return {"error": "Path bukan merupakan direktori atau file tidak ditemukan."}
+        return []
 
-    md_files = [f for f in contents if f['name'].endswith('.md')]
+    md_files = []
+    for item in contents:
+        if item['type'] == 'dir':
+            # Recursive call for subdirectories
+            md_files.extend(scan_recursive(owner, repo, token, item['path']))
+        elif item['type'] == 'file' and item['name'].endswith('.md'):
+            md_files.append({
+                "name": item['name'],
+                "path": item['path'],
+                "download_url": item['download_url']
+            })
+            
     return md_files
 
 def fetch_file_content(download_url, token=None):
@@ -56,7 +69,7 @@ if __name__ == "__main__":
     is_file = sys.argv[5] == "true" if len(sys.argv) > 5 else False
 
     if is_file:
-        # Fetch spesifik file
+        # Fetch spesifik file menggunakan path
         url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
         file_info = github_api_request(url, token)
         if isinstance(file_info, dict) and "download_url" in file_info:
@@ -65,6 +78,6 @@ if __name__ == "__main__":
         else:
             print(json.dumps({"error": f"File '{path}' tidak ditemukan."}))
     else:
-        # List semua file .md di path
-        files = list_markdown_files(owner, repo, token, path)
+        # Scan rekursif dari root atau path tertentu
+        files = scan_recursive(owner, repo, token, path)
         print(json.dumps(files))

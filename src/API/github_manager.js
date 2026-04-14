@@ -92,7 +92,7 @@ function processMarkdownToEmbeds(content, fileName) {
  */
 export async function fetchAllTutorialsRaw() {
     const { githubRepoOwner, githubRepoName, githubToken } = config;
-    const tutorialPath = 'tutorial/docs/guides';
+    const tutorialPath = ""; // Scan from the root recursively
 
     try {
         const listCmd = `python "${pythonScriptPath}" "${githubRepoOwner}" "${githubRepoName}" "${githubToken || ''}" "${tutorialPath}" "false"`;
@@ -126,7 +126,7 @@ export async function fetchAllTutorialsRaw() {
  */
 export async function fetchAllTutorialsEmbeds() {
     const { githubRepoOwner, githubRepoName, githubToken } = config;
-    const tutorialPath = 'tutorial/docs/guides'; // Target folder
+    const tutorialPath = ""; // Scan from the root of the repository recursively
 
     try {
         // 1. List files in 'tutorial/' folder
