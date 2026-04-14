@@ -5,15 +5,8 @@ import {
     ButtonStyle,
     ComponentType,
 } from 'discord.js';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { config } from '../config.js';
 import Logger from '../utils/logger.js';
-
-const execPromise = promisify(exec);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export default {
     name: 'wikipedia',
@@ -29,15 +22,8 @@ export default {
         const loadingMsg = await message.reply('Sedang mengumpulkan data dari Wikipedia...');
 
         try {
-            const scriptPath = path.join(__dirname, '..', 'API', 'python', 'wiki_fetcher.py');
-            const { stdout, stderr } = await execPromise(`python "${scriptPath}" "${query}"`);
-
-            if (stderr) {
-                Logger.error('Wikipedia Python Error:', stderr);
-                return loadingMsg.edit('Terjadi kesalahan teknis saat mengambil data.');
-            }
-
-            const data = JSON.parse(stdout);
+            const response = await fetch(`${config.apiUrl}/wikipedia?q=${encodeURIComponent(query)}&lang=id`);
+            const data = await response.json();
 
             if (data.error) {
                 return loadingMsg.edit(data.error);
@@ -139,7 +125,7 @@ export default {
                 });
             }
         } catch (error) {
-            Logger.error('Wikipedia Execution Error:', error);
+            Logger.error('Wikipedia Error:', error);
             loadingMsg.edit('Gagal menghubungi layanan Wikipedia.');
         }
     },

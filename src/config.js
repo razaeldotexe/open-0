@@ -8,4 +8,5 @@ export const config = {
     geminiApiKey: process.env.GEMINI_API_KEY,
     groqApiKey: process.env.GROQ_API_KEY,
     openrouterApiKey: process.env.OPENROUTER_API_KEY,
+    apiUrl: process.env.API_URL || 'http://localhost:5000',
 };

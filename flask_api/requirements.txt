@@ -1,2 +1,4 @@
 arxiv
 wikipedia-api
+flask
+gunicorn

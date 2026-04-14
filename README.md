@@ -1,10 +1,10 @@
 # OpenZero
 
 <p align="center">
-  <img src="/assets/openzero_full.png" width="100" alt="OpenZero Logo">
+  <img src="./assets/openzero_full.png" width="600" alt="OpenZero Logo">
 </p>
 
-OpenZero is a modular Discord bot designed as a research and development assistant. It connects users directly to various Open Data sources through simple text commands.
+OpenZero is a modular Discord bot designed as a research and development assistant. It connects users directly to various Open Data sources through a separate Flask-based API.
 
 ## Core Features
 
@@ -16,9 +16,9 @@ OpenZero is a modular Discord bot designed as a research and development assista
 
 ## Technology Stack
 
-- **Node.js v18+** & **Discord.js v14** (ES Modules)
-- **Python 3** (Helper API scripts)
-- **AI Integration**: Gemini, Groq (Llama 3.1), and OpenRouter.
+- **Bot:** Node.js v18+ & Discord.js v14 (ES Modules)
+- **API:** Flask (Python) - Hosted separately.
+- **AI Integration:** Gemini, Groq (Llama 3.1), and OpenRouter.
 
 ## Installation
 
@@ -30,30 +30,24 @@ OpenZero is a modular Discord bot designed as a research and development assista
    - `GEMINI_API_KEY`
    - `GROQ_API_KEY`
    - `OPENROUTER_API_KEY`
+   - `API_URL` (URL of your deployed Flask API)
 4. Install dependencies:
    ```bash
    npm install
    ```
 
-## Usage
-
-- Start the bot:
-  ```bash
-  npm start
-  ```
-- Format the codebase (JavaScript and Python):
-  ```bash
-  npm run format
-  ```
-
 ## Project Structure
 
-- `src/index.js`: Main entry point.
+- `src/index.js`: Main entry point for the bot.
 - `src/commands/`: Discord command logic.
-- `src/API/`: API management and data processing.
-- `src/API/python/`: Python helper scripts for external data fetching.
+- `src/API/`: API managers that communicate with the Flask service.
 - `src/utils/`: Utility functions and logging system.
+- `flask_api/`: (Optional) The Flask API project source if kept in the same mono-repo.
 
-## Logging System
+## Deployment
 
-The project uses a custom logging system located in `src/utils/logger.js`. It provides standardized timestamps and log levels (INFO, WARN, ERROR, DEBUG) for both the Node.js application and Python scripts.
+### Bot (Railway)
+The bot is deployed using GitHub Actions. Ensure you have `RAILWAY_TOKEN` and `RAILWAY_SERVICE_ID` in your GitHub Secrets.
+
+### API (Railway)
+The Flask API in the `flask_api/` folder should be deployed as its own service on Railway.
