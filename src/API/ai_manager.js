@@ -7,15 +7,21 @@ import Logger from '../utils/logger.js';
 async function handleAIResponse(response, provider) {
     if (!response.ok) {
         const text = await response.text();
-        Logger.error(`AI Provider Error (${provider}): Status ${response.status}. Response: ${text.slice(0, 100)}...`);
+        Logger.error(
+            `AI Provider Error (${provider}): Status ${response.status}. Response: ${text.slice(0, 100)}...`
+        );
         throw new Error(`AI Provider ${provider} returned an error: ${response.status}`);
     }
 
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
-        Logger.error(`AI Provider ${provider} expected JSON but got: ${contentType}. Content preview: ${text.slice(0, 100)}...`);
-        throw new Error(`AI Provider ${provider} returned HTML instead of JSON. This usually means a limit was hit or the service is down.`);
+        Logger.error(
+            `AI Provider ${provider} expected JSON but got: ${contentType}. Content preview: ${text.slice(0, 100)}...`
+        );
+        throw new Error(
+            `AI Provider ${provider} returned HTML instead of JSON. This usually means a limit was hit or the service is down.`
+        );
     }
 
     return response.json();
@@ -48,7 +54,7 @@ ${fileContext}`;
     const providers = [
         { name: 'Gemini', fn: tryGemini },
         { name: 'Groq', fn: tryGroq },
-        { name: 'OpenRouter', fn: tryOpenRouter }
+        { name: 'OpenRouter', fn: tryOpenRouter },
     ];
 
     for (const provider of providers) {
@@ -57,7 +63,9 @@ ${fileContext}`;
             const result = await provider.fn(prompt);
             if (result && result !== 'none') {
                 // Pastikan result ada di daftar file kita
-                const matchedFile = Array.from(files.keys()).find(f => f.toLowerCase() === result.toLowerCase() || result.includes(f));
+                const matchedFile = Array.from(files.keys()).find(
+                    (f) => f.toLowerCase() === result.toLowerCase() || result.includes(f)
+                );
                 if (matchedFile) return matchedFile;
             }
             if (result === 'none') return null;
@@ -76,8 +84,8 @@ async function tryGemini(prompt) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
-        })
+            contents: [{ parts: [{ text: prompt }] }],
+        }),
     });
 
     const data = await handleAIResponse(response, 'Gemini');
@@ -88,13 +96,13 @@ async function tryGroq(prompt) {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${config.groqApiKey}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${config.groqApiKey}`,
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             model: 'llama-3.1-8b-instant',
-            messages: [{ role: 'user', content: prompt }]
-        })
+            messages: [{ role: 'user', content: prompt }],
+        }),
     });
 
     const data = await handleAIResponse(response, 'Groq');
@@ -105,13 +113,13 @@ async function tryOpenRouter(prompt) {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${config.openrouterApiKey}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${config.openrouterApiKey}`,
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             model: 'meta-llama/llama-3.1-8b-instruct:free',
-            messages: [{ role: 'user', content: prompt }]
-        })
+            messages: [{ role: 'user', content: prompt }],
+        }),
     });
 
     const data = await handleAIResponse(response, 'OpenRouter');
