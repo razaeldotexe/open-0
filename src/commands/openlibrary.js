@@ -44,7 +44,6 @@ export default {
                     ? book.author_name.join(', ')
                     : 'Penulis Tidak Diketahui';
                 const firstPublish = book.first_publish_year || 'Tahun Tidak Diketahui';
-                const isbn = book.isbn ? book.isbn[0] : null;
                 const coverId = book.cover_i;
                 const olKey = book.key; // e.g. /works/OL27258W
 
