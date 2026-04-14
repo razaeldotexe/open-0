@@ -80,25 +80,27 @@ function processMarkdownToEmbeds(content, fileName) {
 async function handleFetchResponse(response, context = '') {
     if (!response.ok) {
         const text = await response.text();
-        Logger.error(
-            `API Error (${context}): Status ${response.status}. Response: ${text.slice(0, 100)}...`
-        );
+        Logger.error(`API Error (${context}): Status ${response.status}. Response: ${text.slice(0, 100)}...`);
         throw new Error(`API service returned an error: ${response.status}`);
     }
 
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
-        Logger.error(
-            `Expected JSON but got: ${contentType} in ${context}. Content preview: ${text.slice(0, 100)}...`
-        );
-        throw new Error(
-            'API returned HTML instead of JSON. Check if your API_URL is correct and the service is awake.'
-        );
+        Logger.error(`Expected JSON but got: ${contentType} in ${context}. Content preview: ${text.slice(0, 100)}...`);
+        throw new Error('API returned HTML instead of JSON. Check if your API_URL is correct and the service is awake.');
     }
 
     return response.json();
 }
+
+/**
+ * Common headers for all API requests.
+ */
+const API_HEADERS = {
+    'Content-Type': 'application/json',
+    'User-Agent': 'OpenZeroBot/1.0 (DiscordBot; +https://github.com/razaeldotexe/open-0)'
+};
 
 export async function fetchAllTutorialsRaw() {
     const { githubRepoOwner, githubRepoName, githubToken, apiUrl } = config;
@@ -106,7 +108,7 @@ export async function fetchAllTutorialsRaw() {
     try {
         const response = await fetch(`${apiUrl}/github/scan`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: API_HEADERS,
             body: JSON.stringify({
                 owner: githubRepoOwner,
                 repo: githubRepoName,
@@ -123,7 +125,7 @@ export async function fetchAllTutorialsRaw() {
         for (const file of files) {
             const contentResp = await fetch(`${apiUrl}/github/content`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: API_HEADERS,
                 body: JSON.stringify({
                     owner: githubRepoOwner,
                     repo: githubRepoName,
@@ -131,7 +133,7 @@ export async function fetchAllTutorialsRaw() {
                     path: file.path,
                 }),
             });
-
+            
             if (contentResp.ok) {
                 const fileData = await handleFetchResponse(contentResp, `Fetch ${file.name}`);
                 if (fileData.content) {
@@ -157,7 +159,7 @@ export async function fetchAllTutorialsEmbeds() {
     try {
         const response = await fetch(`${apiUrl}/github/scan`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: API_HEADERS,
             body: JSON.stringify({
                 owner: githubRepoOwner,
                 repo: githubRepoName,
@@ -174,7 +176,7 @@ export async function fetchAllTutorialsEmbeds() {
         for (const file of files) {
             const contentResp = await fetch(`${apiUrl}/github/content`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: API_HEADERS,
                 body: JSON.stringify({
                     owner: githubRepoOwner,
                     repo: githubRepoName,
@@ -182,7 +184,7 @@ export async function fetchAllTutorialsEmbeds() {
                     path: file.path,
                 }),
             });
-
+            
             if (contentResp.ok) {
                 const fileData = await handleFetchResponse(contentResp, `Fetch Embed ${file.name}`);
                 if (fileData.content) {
