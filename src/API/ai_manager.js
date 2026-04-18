@@ -115,6 +115,44 @@ ${supportedLanguages.join(', ')}`;
     return 'English (US)'; // Default fallback
 }
 
+/**
+ * Mengonversi nama bahasa (mungkin dalam bahasa asing seperti "inggris") ke nama resmi di daftar kita.
+ * @param {string} inputName Nama bahasa yang diinput user.
+ * @param {string[]} supportedLanguages Daftar bahasa resmi.
+ * @returns {Promise<string|null>} Nama resmi atau null.
+ */
+export async function resolveLanguageNameWithAI(inputName, supportedLanguages) {
+    const prompt = `The user wants to set their language to: "${inputName}".
+    Identify which of the following official language names they are referring to.
+    Return ONLY the exact name from the provided list.
+    If no match is found or you are unsure, return "none".
+
+    List of Official Languages:
+    ${supportedLanguages.join(', ')}`;
+
+    // Fallback order: Gemini -> Groq -> OpenRouter
+    const providers = [
+        { name: 'Gemini', fn: tryGemini },
+        { name: 'Groq', fn: tryGroq },
+        { name: 'OpenRouter', fn: tryOpenRouter },
+    ];
+
+    for (const provider of providers) {
+        try {
+            Logger.info(`[AI Resolution] Trying ${provider.name} for "${inputName}"...`);
+            const result = await provider.fn(prompt);
+            if (result && supportedLanguages.includes(result)) {
+                return result;
+            }
+            if (result === 'none') return null;
+        } catch (error) {
+            Logger.error(`[AI Resolution] ${provider.name} failed:`, error.message);
+        }
+    }
+
+    return null;
+}
+
 async function tryGemini(prompt) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.geminiApiKey}`;
     const response = await fetch(url, {

@@ -1,7 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 import { SUPPORTED_LANGUAGES } from '../utils/languages.js';
 import { getLanguage, setLanguage, t } from '../utils/i18n.js';
-import { detectLanguageWithAI } from '../API/ai_manager.js';
+import { detectLanguageWithAI, resolveLanguageNameWithAI } from '../API/ai_manager.js';
 import Logger from '../utils/logger.js';
 
 export default {
@@ -32,10 +32,26 @@ export default {
                     'Mohon berikan nama bahasa. Contoh: `!language set English (US)`'
                 );
 
-            // Find match (case insensitive)
-            const matchedLang = SUPPORTED_LANGUAGES.find(
+            // 1. Coba match langsung dulu (case insensitive)
+            let matchedLang = SUPPORTED_LANGUAGES.find(
                 (l) => l.toLowerCase() === langName.toLowerCase()
             );
+
+            // 2. Jika tidak ketemu, coba gunakan AI untuk resolve (misal: "inggris" -> "English (US)")
+            if (!matchedLang) {
+                const loadingMsg = await message.reply(t('common.loading'));
+                try {
+                    matchedLang = await resolveLanguageNameWithAI(langName, SUPPORTED_LANGUAGES);
+                    if (matchedLang) {
+                        await loadingMsg.delete().catch(() => {});
+                    } else {
+                        return loadingMsg.edit(t('commands.language.invalid'));
+                    }
+                } catch (error) {
+                    Logger.error('AI Language Resolution failed:', error);
+                    return loadingMsg.edit(t('common.error', { error: error.message }));
+                }
+            }
 
             if (!matchedLang) {
                 return message.reply(t('commands.language.invalid'));
