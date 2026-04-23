@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, PermissionsBitField } from 'discord.js';
+import OpenZeroEmbed from '../utils/embed.js';
 import { t } from '../utils/i18n.js';
-import Logger from '../utils/logger.js';
 
 export default {
     data: new SlashCommandBuilder()
@@ -9,18 +9,22 @@ export default {
         .addIntegerOption((option) =>
             option
                 .setName('amount')
-                .setDescription('Number of messages to delete')
+                .setDescription('Number of messages to delete (1-100)')
                 .setRequired(true)
-                .setMinValue(1)
-                .setMaxValue(100)
         ),
     async execute(context, args) {
         const guildId = context.guild?.id;
         const isInteraction = context.isChatInputCommand?.();
 
         if (!context.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-            const msg = await t('commands.clear.no_perms', {}, guildId);
-            return context.reply({ content: msg, ephemeral: true });
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(await t('commands.clear.no_perms', {}, guildId))
+                .setColor('#ff0000');
+            return context.reply({
+                embeds: [embed],
+                ephemeral: true,
+            });
         }
 
         let amount;
@@ -31,29 +35,25 @@ export default {
         }
 
         if (isNaN(amount) || amount < 1 || amount > 100) {
-            const msg = await t('commands.clear.invalid', {}, guildId);
-            return context.reply({ content: msg, ephemeral: true });
-        }
-
-        // For prefix commands, we delete amount + 1. For slash, just amount.
-        const deleteAmount = isInteraction ? amount : amount + 1;
-
-        try {
-            await context.channel.bulkDelete(deleteAmount, true);
-            const successMsg = await t('commands.clear.success', { amount }, guildId);
-
-            if (isInteraction) {
-                return await context.reply({ content: successMsg, ephemeral: true });
-            } else {
-                const msg = await context.channel.send(successMsg);
-                setTimeout(() => msg.delete().catch(() => {}), 3000);
-            }
-        } catch (error) {
-            Logger.error('Clear Error:', error);
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(await t('commands.clear.invalid', {}, guildId))
+                .setColor('#ff0000');
             return context.reply({
-                content: await t('common.error', { error: error.message }, guildId),
+                embeds: [embed],
                 ephemeral: true,
             });
         }
+
+        await context.channel.bulkDelete(amount, true);
+
+        const embed = new OpenZeroEmbed({}, context)
+            .setTitle(await t('common.success', {}, guildId))
+            .setDescription(await t('commands.clear.success', { amount }, guildId));
+
+        return context.reply({
+            embeds: [embed],
+            ephemeral: true,
+        });
     },
 };

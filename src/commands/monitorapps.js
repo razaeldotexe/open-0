@@ -43,12 +43,16 @@ export default {
 
         if (action === 'stop') {
             await deleteMonitor(guildId, source);
+            const successMsg = await t(
+                'commands.monitorapps.stop_success',
+                { source: source.toUpperCase() },
+                guildId
+            );
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.success', {}, guildId))
+                .setDescription(successMsg);
             return context.reply({
-                content: await t(
-                    'commands.monitorapps.stop_success',
-                    { source: source.toUpperCase() },
-                    guildId
-                ),
+                embeds: [embed],
                 ephemeral: true,
             });
         }
@@ -68,7 +72,13 @@ export default {
                     { source: source.toUpperCase() },
                     guildId
                 );
-                return isInteraction ? context.editReply(noResults) : context.reply(noResults);
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(noResults)
+                    .setColor('#ff0000');
+                return isInteraction
+                    ? context.editReply({ embeds: [embed] })
+                    : context.reply({ embeds: [embed] });
             }
 
             const embed = new OpenZeroEmbed({}, context)
@@ -101,18 +111,25 @@ export default {
                 { channel: channel.toString() },
                 guildId
             );
+            const successEmbed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.success', {}, guildId))
+                .setDescription(successMsg);
             if (isInteraction) {
-                await context.editReply(successMsg);
+                await context.editReply({ embeds: [successEmbed] });
             } else {
-                await context.reply(successMsg);
+                await context.reply({ embeds: [successEmbed] });
             }
         } catch (error) {
             Logger.error('MonitorApps Error:', error);
             const errorMsg = await t('common.error', { error: error.message }, guildId);
+            const errorEmbed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(errorMsg)
+                .setColor('#ff0000');
             if (isInteraction) {
-                await context.editReply(errorMsg);
+                await context.editReply({ embeds: [errorEmbed] });
             } else {
-                await context.reply(errorMsg);
+                await context.reply({ embeds: [errorEmbed] });
             }
         }
     },

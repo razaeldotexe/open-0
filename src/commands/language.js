@@ -47,7 +47,8 @@ export default {
         if (!subCommand) {
             const currentLang = await getLanguage(guildId);
             const msg = await t('commands.language.current', { lang: currentLang }, guildId);
-            return context.reply(msg);
+            const embed = new OpenZeroEmbed({}, context).setDescription(msg);
+            return context.reply({ embeds: [embed] });
         }
 
         if (subCommand === 'list') {
@@ -68,7 +69,8 @@ export default {
 
             if (!langName) {
                 const prompt = await t('commands.language.set_prompt', {}, guildId);
-                return context.reply(prompt);
+                const embed = new OpenZeroEmbed({}, context).setDescription(prompt);
+                return context.reply({ embeds: [embed] });
             }
 
             // 1. Try direct match
@@ -91,7 +93,8 @@ export default {
             if (!matchedLang) {
                 if (!isInteraction) {
                     const loadingText = await t('common.loading', {}, guildId);
-                    loadingMsg = await context.reply(loadingText);
+                    const embed = new OpenZeroEmbed({}, context).setDescription(loadingText);
+                    loadingMsg = await context.reply({ embeds: [embed] });
                 }
 
                 try {
@@ -99,13 +102,21 @@ export default {
                 } catch (error) {
                     Logger.error('AI Language Resolution failed:', error);
                     const errorText = await t('common.error', { error: error.message }, guildId);
-                    return await editResponse({ content: errorText });
+                    const embed = new OpenZeroEmbed({}, context)
+                        .setTitle(await t('common.error_title', {}, guildId))
+                        .setDescription(errorText)
+                        .setColor('#ff0000');
+                    return await editResponse({ embeds: [embed] });
                 }
             }
 
             if (!matchedLang) {
                 const invalidMsg = await t('commands.language.invalid', {}, guildId);
-                return await editResponse({ content: invalidMsg });
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(invalidMsg)
+                    .setColor('#ff0000');
+                return await editResponse({ embeds: [embed] });
             }
 
             await setLanguage(guildId, matchedLang);
@@ -114,7 +125,10 @@ export default {
                 { lang: matchedLang },
                 guildId
             );
-            return await editResponse({ content: successMsg });
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.success', {}, guildId))
+                .setDescription(successMsg);
+            return await editResponse({ embeds: [embed] });
         }
 
         if (subCommand === 'auto') {
@@ -127,7 +141,8 @@ export default {
 
             if (!textToDetect) {
                 const prompt = await t('commands.language.auto_prompt', {}, guildId);
-                return context.reply(prompt);
+                const embed = new OpenZeroEmbed({}, context).setDescription(prompt);
+                return context.reply({ embeds: [embed] });
             }
 
             let loadingMsg = null;
@@ -135,7 +150,8 @@ export default {
                 await context.deferReply();
             } else {
                 const detectingText = await t('commands.language.auto_detecting', {}, guildId);
-                loadingMsg = await context.reply(detectingText);
+                const embed = new OpenZeroEmbed({}, context).setDescription(detectingText);
+                loadingMsg = await context.reply({ embeds: [embed] });
             }
 
             const editResponse = async (opts) => {
@@ -153,25 +169,38 @@ export default {
                         { lang: detectedLang },
                         guildId
                     );
-                    return await editResponse({ content: successText });
+                    const embed = new OpenZeroEmbed({}, context)
+                        .setTitle(await t('common.success', {}, guildId))
+                        .setDescription(successText);
+                    return await editResponse({ embeds: [embed] });
                 } else {
                     const invalidMsg = await t('commands.language.invalid', {}, guildId);
-                    return await editResponse({ content: invalidMsg });
+                    const embed = new OpenZeroEmbed({}, context)
+                        .setTitle(await t('common.error_title', {}, guildId))
+                        .setDescription(invalidMsg)
+                        .setColor('#ff0000');
+                    return await editResponse({ embeds: [embed] });
                 }
             } catch (error) {
                 Logger.error('Language Detection Error:', error);
                 const errorText = await t('common.error', { error: error.message }, guildId);
-                return await editResponse({ content: errorText });
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(errorText)
+                    .setColor('#ff0000');
+                return await editResponse({ embeds: [embed] });
             }
         }
 
         if (subCommand === 'current') {
             const currentLang = await getLanguage(guildId);
             const msg = await t('commands.language.current', { lang: currentLang }, guildId);
-            return context.reply(msg);
+            const embed = new OpenZeroEmbed({}, context).setDescription(msg);
+            return context.reply({ embeds: [embed] });
         }
 
         const usageHint = await t('commands.language.usage_hint', {}, guildId);
-        return context.reply(usageHint);
+        const embed = new OpenZeroEmbed({}, context).setDescription(usageHint);
+        return context.reply({ embeds: [embed] });
     },
 };

@@ -48,14 +48,20 @@ export default {
 
         if (!query) {
             const queryReq = await t('commands.appsearch.query_required', {}, guildId);
-            return context.reply(queryReq);
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(queryReq)
+                .setColor('#ff0000');
+            return context.reply({ embeds: [embed] });
         }
 
         let loadingMsg;
         if (isInteraction) {
             await context.deferReply();
         } else {
-            loadingMsg = await context.reply(await t('common.loading', {}, guildId));
+            const loadingText = await t('common.loading', {}, guildId);
+            const embed = new OpenZeroEmbed({}, context).setDescription(loadingText);
+            loadingMsg = await context.reply({ embeds: [embed] });
         }
 
         const editResponse = async (options) => {
@@ -71,7 +77,11 @@ export default {
             });
 
             if (data.error) {
-                return await editResponse({ content: data.error });
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(data.error)
+                    .setColor('#ff0000');
+                return await editResponse({ embeds: [embed] });
             }
 
             if (!Array.isArray(data) || data.length === 0) {
@@ -81,7 +91,11 @@ export default {
                     { query, source: sourceDisplay },
                     guildId
                 );
-                return await editResponse({ content: noResults });
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(noResults)
+                    .setColor('#ff0000');
+                return await editResponse({ embeds: [embed] });
             }
 
             const apps = data;
@@ -167,8 +181,12 @@ export default {
 
                 collector.on('collect', async (interaction) => {
                     if (interaction.user.id !== user.id) {
+                        const accessDeniedEmbed = new OpenZeroEmbed({}, context)
+                            .setTitle(await t('common.error_title', {}, guildId))
+                            .setDescription(await t('common.access_denied', {}, guildId))
+                            .setColor('#ff0000');
                         return interaction.reply({
-                            content: await t('common.access_denied', {}, guildId),
+                            embeds: [accessDeniedEmbed],
                             ephemeral: true,
                         });
                     }
@@ -196,7 +214,11 @@ export default {
         } catch (error) {
             Logger.error('AppSearch Error:', error.message);
             const errorText = await t('common.error', { error: error.message }, guildId);
-            await editResponse({ content: errorText });
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(errorText)
+                .setColor('#ff0000');
+            await editResponse({ embeds: [embed] });
         }
     },
 };

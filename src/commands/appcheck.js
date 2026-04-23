@@ -28,14 +28,20 @@ export default {
 
         if (!query) {
             const queryReq = await t('commands.appcheck.query_required', {}, guildId);
-            return context.reply(queryReq);
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(queryReq)
+                .setColor('#ff0000');
+            return context.reply({ embeds: [embed] });
         }
 
         let loadingMsg;
         if (isInteraction) {
             await context.deferReply();
         } else {
-            loadingMsg = await context.reply(await t('commands.appcheck.searching', {}, guildId));
+            const loadingText = await t('commands.appcheck.searching', {}, guildId);
+            const embed = new OpenZeroEmbed({}, context).setDescription(loadingText);
+            loadingMsg = await context.reply({ embeds: [embed] });
         }
 
         const editResponse = async (options) => {
@@ -50,12 +56,20 @@ export default {
             });
 
             if (data.error) {
-                return await editResponse({ content: data.error });
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(data.error)
+                    .setColor('#ff0000');
+                return await editResponse({ embeds: [embed] });
             }
 
             if (!data.platforms || data.platforms.length === 0) {
                 const noResults = await t('commands.appcheck.no_results', { query }, guildId);
-                return await editResponse({ content: noResults });
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(noResults)
+                    .setColor('#ff0000');
+                return await editResponse({ embeds: [embed] });
             }
 
             const categories = {
@@ -118,7 +132,11 @@ export default {
         } catch (error) {
             Logger.error('AppCheck Error:', error.message);
             const errorText = await t('common.error', { error: error.message }, guildId);
-            await editResponse({ content: errorText });
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(errorText)
+                .setColor('#ff0000');
+            await editResponse({ embeds: [embed] });
         }
     },
 };

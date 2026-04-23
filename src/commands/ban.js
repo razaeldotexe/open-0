@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, PermissionsBitField } from 'discord.js';
+import OpenZeroEmbed from '../utils/embed.js';
 import { t } from '../utils/i18n.js';
 
 export default {
@@ -16,8 +17,12 @@ export default {
         const isInteraction = context.isChatInputCommand?.();
 
         if (!context.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(await t('commands.ban.no_perms', {}, guildId))
+                .setColor('#ff0000');
             return context.reply({
-                content: await t('commands.ban.no_perms', {}, guildId),
+                embeds: [embed],
                 ephemeral: true,
             });
         }
@@ -31,8 +36,13 @@ export default {
                 context.options.getString('reason') ||
                 (await t('commands.ban.no_reason', {}, guildId));
         } else {
-            if (args.length === 0)
-                return context.reply(await t('commands.ban.mention', {}, guildId));
+            if (args.length === 0) {
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(await t('commands.ban.mention', {}, guildId))
+                    .setColor('#ff0000');
+                return context.reply({ embeds: [embed] });
+            }
             const userId = args[0].replace(/[<@!>]/g, '');
             target =
                 context.guild.members.cache.get(userId) ||
@@ -41,22 +51,34 @@ export default {
         }
 
         if (!target) {
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(await t('commands.ban.mention', {}, guildId))
+                .setColor('#ff0000');
             return context.reply({
-                content: await t('commands.ban.mention', {}, guildId),
+                embeds: [embed],
                 ephemeral: true,
             });
         }
         if (!target.bannable) {
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(await t('commands.ban.unable', {}, guildId))
+                .setColor('#ff0000');
             return context.reply({
-                content: await t('commands.ban.unable', {}, guildId),
+                embeds: [embed],
                 ephemeral: true,
             });
         }
 
         await target.ban({ reason });
 
-        return context.reply(
-            await t('commands.ban.success', { tag: target.user.tag, reason }, guildId)
-        );
+        const embed = new OpenZeroEmbed({}, context)
+            .setTitle(await t('common.success', {}, guildId))
+            .setDescription(
+                await t('commands.ban.success', { tag: target.user.tag, reason }, guildId)
+            );
+
+        return context.reply({ embeds: [embed] });
     },
 };

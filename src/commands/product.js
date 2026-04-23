@@ -21,7 +21,11 @@ export default {
 
         if (!query) {
             const msg = await t('commands.product.query_required', {}, guildId);
-            return context.reply({ content: msg, ephemeral: true });
+            const embed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(msg)
+                .setColor('#ff0000');
+            return context.reply({ embeds: [embed], ephemeral: true });
         }
 
         let loadingMsg = null;
@@ -29,7 +33,8 @@ export default {
             await context.deferReply();
         } else {
             const searchingText = await t('commands.product.searching', {}, guildId);
-            loadingMsg = await context.reply(searchingText);
+            const embed = new OpenZeroEmbed({}, context).setDescription(searchingText);
+            loadingMsg = await context.reply({ embeds: [embed] });
         }
 
         const editResponse = async (options) => {
@@ -47,7 +52,11 @@ export default {
 
             if (!Array.isArray(products) || products.length === 0) {
                 const noResults = await t('commands.product.no_results', { query }, guildId);
-                return await editResponse({ content: noResults });
+                const embed = new OpenZeroEmbed({}, context)
+                    .setTitle(await t('common.error_title', {}, guildId))
+                    .setDescription(noResults)
+                    .setColor('#ff0000');
+                return await editResponse({ embeds: [embed] });
             }
 
             const embed = new OpenZeroEmbed({}, context)
@@ -84,7 +93,11 @@ export default {
         } catch (error) {
             Logger.error('Product Search Error:', error);
             const errorMsg = await t('common.error', { error: error.message }, guildId);
-            await editResponse({ content: errorMsg });
+            const errorEmbed = new OpenZeroEmbed({}, context)
+                .setTitle(await t('common.error_title', {}, guildId))
+                .setDescription(errorMsg)
+                .setColor('#ff0000');
+            await editResponse({ embeds: [errorEmbed] });
         }
     },
 };
