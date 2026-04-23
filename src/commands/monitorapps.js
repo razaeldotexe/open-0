@@ -82,7 +82,7 @@ export default {
             }
 
             const embed = new OpenZeroEmbed({}, context)
-                .setTitle(`📈 Trending Apps: ${source.toUpperCase()}`)
+                .setTitle(`Trending Apps: ${source.toUpperCase()}`)
                 .setDescription(await t('commands.monitorapps.embed_desc', {}, guildId))
                 .setFooter({ text: await t('commands.monitorapps.last_updated', {}, guildId) });
 

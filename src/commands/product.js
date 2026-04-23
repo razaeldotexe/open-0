@@ -60,7 +60,7 @@ export default {
             }
 
             const embed = new OpenZeroEmbed({}, context)
-                .setTitle(`🛍️ AI Product Search: ${query}`)
+                .setTitle(`AI Product Search: ${query}`)
                 .setFooter({ text: await t('commands.product.footer', {}, guildId) });
 
             const priceLabel = await t('commands.product.price', {}, guildId);
@@ -68,7 +68,7 @@ export default {
 
             products.forEach((p, index) => {
                 embed.addFields({
-                    name: `🔹 ${p.name}`,
+                    name: `${p.name}`,
                     value: `${p.description}\n**${priceLabel}:** ${p.price}\n*Source: ${p.source_name}*`,
                     inline: false,
                 });

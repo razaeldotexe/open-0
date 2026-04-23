@@ -26,7 +26,7 @@ export default {
                 .setCustomId('create_ticket')
                 .setLabel(await t('commands.ticket.setup_btn', {}, guildId))
                 .setStyle(ButtonStyle.Primary)
-                .setEmoji('🎫')
+                .setEmoji('')
         );
 
         await context.channel.send({

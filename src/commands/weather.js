@@ -66,18 +66,6 @@ export default {
                 return await editResponse({ content: data.detail });
             }
 
-            const getEmoji = (condition) => {
-                const cond = condition.toLowerCase();
-                if (cond.includes('clear') || cond.includes('sunny')) return '☀️';
-                if (cond.includes('cloud') || cond.includes('overcast')) return '☁️';
-                if (cond.includes('rain') || cond.includes('drizzle')) return '🌧️';
-                if (cond.includes('snow') || cond.includes('ice')) return '❄️';
-                if (cond.includes('thunder')) return '⛈️';
-                if (cond.includes('fog') || cond.includes('mist') || cond.includes('haze'))
-                    return '🌫️';
-                return '🌡️';
-            };
-
             const createCurrentEmbed = async () => {
                 return new OpenZeroEmbed({}, context)
                     .setAuthor({
@@ -99,7 +87,7 @@ export default {
                         },
                         {
                             name: await t('commands.weather.condition_label', {}, guildId),
-                            value: `${getEmoji(data.current.condition)} ${data.current.condition}`,
+                            value: data.current.condition,
                             inline: true,
                         },
                         {
@@ -128,7 +116,7 @@ export default {
                 data.daily.forEach((day) => {
                     embed.addFields({
                         name: day.date,
-                        value: `${getEmoji(day.condition)} ${day.condition}\n${maxLabel}: ${day.max_temp}°C | ${minLabel}: ${day.min_temp}°C`,
+                        value: `${day.condition}\n${maxLabel}: ${day.max_temp}°C | ${minLabel}: ${day.min_temp}°C`,
                         inline: true,
                     });
                 });
@@ -145,7 +133,7 @@ export default {
                     const time = hour.time.includes('T') ? hour.time.split('T')[1] : hour.time;
                     embed.addFields({
                         name: time,
-                        value: `${getEmoji(hour.condition)} ${hour.temperature}°C`,
+                        value: `${hour.temperature}°C`,
                         inline: true,
                     });
                 });
