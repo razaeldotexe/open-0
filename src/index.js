@@ -266,7 +266,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
                     .setCustomId('close_ticket')
                     .setLabel(closeBtnLabel)
                     .setStyle(ButtonStyle.Danger)
-                    .setEmoji('🔒')
+                    .setEmoji('')
             );
 
             await ticketChannel.send({ embeds: [embed], components: [row] });
@@ -280,7 +280,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
             });
 
             await interaction.editReply({
-                content: `✅ Ticket created: ${ticketChannel.toString()}`,
+                content: `Ticket created: ${ticketChannel.toString()}`,
             });
         } catch (error) {
             Logger.error('Failed to create ticket channel:', error);

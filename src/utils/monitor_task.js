@@ -54,7 +54,7 @@ export async function updateMonitors(client) {
 
             const guildId = monitor.guildId;
             const embed = new OpenZeroEmbed()
-                .setTitle(`📈 Trending Apps: ${monitor.source.toUpperCase()}`)
+                .setTitle(`Trending Apps: ${monitor.source.toUpperCase()}`)
                 .setDescription(await t('commands.monitorapps.embed_desc', {}, guildId))
                 .setFooter({ text: await t('commands.monitorapps.last_updated', {}, guildId) });
 

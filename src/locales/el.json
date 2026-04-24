@@ -37,8 +37,8 @@
         "monitorapps": {
             "name": "monitorapps",
             "description": "Send and monitor top trending apps in a specific channel",
-            "start_success": "✅ Successfully started monitoring in {channel}. A trending list has been sent.",
-            "stop_success": "🛑 Successfully stopped monitoring for {source}.",
+            "start_success": "Successfully started monitoring in {channel}. A trending list has been sent.",
+            "stop_success": "Successfully stopped monitoring for {source}.",
             "no_results": "No trending apps found for {source}.",
             "embed_desc": "This list is automatically updated every 24 hours.",
             "last_updated": "Last Updated",
@@ -163,7 +163,7 @@
             "mention": "Mention (@mention) the member you want to kick.",
             "unable": "I cannot kick this member.",
             "no_reason": "No reason provided.",
-            "success": "👢 **{tag}** has been kicked. Reason: {reason}"
+            "success": "**{tag}** has been kicked. Reason: {reason}"
         },
         "ban": {
             "description": "Bans a member from the server",
@@ -171,13 +171,13 @@
             "mention": "Mention (@mention) the member you want to ban.",
             "unable": "I cannot ban this member.",
             "no_reason": "No reason provided.",
-            "success": "🔨 **{tag}** has been permanently banned. Reason: {reason}"
+            "success": "**{tag}** has been permanently banned. Reason: {reason}"
         },
         "clear": {
             "description": "Deletes a specified number of messages",
             "no_perms": "You need `Manage Messages` permission to delete messages.",
             "invalid": "Enter an amount between 1 and 100.",
-            "success": "✅ Successfully deleted {amount} messages."
+            "success": "Successfully deleted {amount} messages."
         },
         "info": {
             "description": "Displays complete user information",
@@ -191,7 +191,7 @@
         "purge": {
             "description": "Delete a specified number of messages (Default: 99)",
             "no_perms": "You need `Manage Messages` permission to use this command.",
-            "success": "✅ Successfully deleted **{amount}** messages."
+            "success": "Successfully deleted **{amount}** messages."
         },
         "ticket": {
             "description": "Ticket system setup",
@@ -238,13 +238,13 @@
         },
         "restart": {
             "description": "Restart the Bot and API (Admin only)",
-            "starting": "🔄 Initiating restart process...",
-            "restarting_api": "⚙️ Restarting API Service...",
-            "restarting_bot": "🤖 Restarting Bot Service...",
-            "api_success": "✅ API Service restart triggered.",
-            "api_failed": "❌ Failed to restart API Service: {error}",
-            "bot_success": "✅ Bot Service restart triggered. See you soon!",
-            "railway_not_configured": "⚠️ Railway API not configured. Restarting bot locally..."
+            "starting": "Initiating restart process...",
+            "restarting_api": "Restarting API Service...",
+            "restarting_bot": "Restarting Bot Service...",
+            "api_success": "API Service restart triggered.",
+            "api_failed": "Failed to restart API Service: {error}",
+            "bot_success": "Bot Service restart triggered. See you soon!",
+            "railway_not_configured": "Railway API not configured. Restarting bot locally..."
         },
         "weather": {
             "name": "weather",
