@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { SlashCommandBuilder } from 'discord.js';
 import { APIClient } from '../API/api_client.js';
 import { OpenZeroEmbed } from '../utils/embed.js';
 import { t, getLanguage } from '../utils/i18n.js';

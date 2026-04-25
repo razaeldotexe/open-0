@@ -84,7 +84,6 @@ export default {
         try {
             let result;
             let title;
-            let fieldName;
 
             if (subcommand === 'explain') {
                 const code = interaction.options.getString('code');
@@ -92,14 +91,12 @@ export default {
                 const data = await APIClient.post('/code/explain', { code, language, lang });
                 result = data.explanation;
                 title = 'Code Explanation';
-                fieldName = 'Analysis';
             } else if (subcommand === 'debug') {
                 const code = interaction.options.getString('code');
                 const error = interaction.options.getString('error');
                 const data = await APIClient.post('/code/debug', { code, error, lang });
                 result = data.fix;
                 title = 'Bug Fix & Analysis';
-                fieldName = 'Solution';
             } else if (subcommand === 'generate') {
                 const prompt = interaction.options.getString('prompt');
                 const language = interaction.options.getString('language');
@@ -112,14 +109,12 @@ export default {
                 });
                 result = data.code;
                 title = 'Generated Code';
-                fieldName = 'Output';
             } else if (subcommand === 'refactor') {
                 const code = interaction.options.getString('code');
                 const instruction = interaction.options.getString('instruction');
                 const data = await APIClient.post('/code/refactor', { code, instruction, lang });
                 result = data.refactoredCode;
                 title = 'Refactored Code';
-                fieldName = 'Refactored Output';
             }
 
             const embed = new OpenZeroEmbed({ title }, interaction);
