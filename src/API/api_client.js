@@ -40,7 +40,7 @@ export const APIClient = {
      * @param {Object} data The body data to send.
      */
     async post(endpoint, data) {
-        const url = `${config.apiUrl}/api/v1${endpoint}`;
+        const url = `${config.apiUrl}/api/delema/v1${endpoint}`;
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -61,7 +61,7 @@ export const APIClient = {
      * Perform a GET request to the API (if needed).
      */
     async get(endpoint) {
-        const url = `${config.apiUrl}/api/v1${endpoint}`;
+        const url = `${config.apiUrl}/api/delema/v1${endpoint}`;
         const response = await fetch(url, {
             headers: API_HEADERS,
         });
