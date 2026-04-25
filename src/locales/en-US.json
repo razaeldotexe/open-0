@@ -96,7 +96,8 @@
             "footer": "Page {current} of {total} • Wikipedia",
             "prev": "Previous",
             "next": "Next",
-            "finished": "Finished"
+            "finished": "Finished",
+            "page_not_found": "Page not found."
         },
         "arxiv": {
             "description": "Search for scientific papers on arXiv",
@@ -266,7 +267,8 @@
             "temp_label": "Temperature",
             "condition_label": "Condition",
             "max_label": "Max",
-            "min_label": "Min"
+            "min_label": "Min",
+            "usage_hint": "Provide either 'city' or both 'lat' and 'lon'"
         },
         "outfit": {
             "name": "outfit",
@@ -277,6 +279,14 @@
             "result_title": "AI Outfit Score: {score}/10",
             "suggestions_label": "Suggestions for Improvement",
             "footer": "AI-powered vision analysis by Delema API"
+        },
+        "code": {
+            "name": "code",
+            "description": "AI-powered developer tools"
+        },
+        "docs": {
+            "name": "docs",
+            "description": "Search documentation and get AI-synthesized answers"
         }
     }
 }

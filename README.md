@@ -8,7 +8,7 @@ OpenZero is a modular research and development assistant Discord bot. It is desi
 
 ## Status
 
-**Currently, all legacy commands have been removed to prepare for a core architectural update. The bot is in System Standby mode.**
+**Bot aktif sepenuhnya dengan integrasi Delema API.**
 
 ## Technology Stack
 

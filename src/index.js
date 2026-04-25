@@ -81,8 +81,8 @@ client.once(Events.ClientReady, async (readyClient) => {
     // Initialize Database
     await initDatabase();
 
-    readyClient.user.setActivity('System standby', {
-        type: ActivityType.Watching,
+    readyClient.user.setActivity('Open Data Research', {
+        type: ActivityType.Listening,
     });
 
     // Initialize monitoring task
