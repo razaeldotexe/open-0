@@ -48,7 +48,8 @@ export class OpenZeroEmbed extends EmbedBuilder {
     }
 
     /**
-     * Adds an AI Summary section as a Field (strictly matching requested code).
+     * Adds an AI Summary section as Fields.
+     * If the summary exceeds 1024 characters, it splits it into multiple fields.
      * @param {string} summary - The AI-generated summary content.
      */
     setAISummary(summary) {
@@ -56,11 +57,25 @@ export class OpenZeroEmbed extends EmbedBuilder {
 
         const cleanSummary = summary.replace(/^TL;DR:\s*/i, '');
 
-        this.addFields({
-            name: 'AI Summary',
-            value: `${cleanSummary} `,
-            inline: false,
-        });
+        if (cleanSummary.length <= 1024) {
+            this.addFields({
+                name: 'AI Summary',
+                value: cleanSummary,
+                inline: false,
+            });
+        } else {
+            // Split into chunks of 1024 characters
+            const chunks = cleanSummary.match(/[\s\S]{1,1024}/g) || [];
+
+            // Limit to a reasonable number of chunks to avoid hitting total embed limits
+            chunks.slice(0, 5).forEach((chunk, index) => {
+                this.addFields({
+                    name: index === 0 ? 'AI Summary' : `AI Summary (Continued ${index + 1})`,
+                    value: chunk,
+                    inline: false,
+                });
+            });
+        }
 
         return this;
     }
