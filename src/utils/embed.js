@@ -1,5 +1,15 @@
 import { EmbedBuilder } from 'discord.js';
-import { config } from '../config.js';
+
+/**
+ * Brand color palette based on CSS variables.
+ */
+export const COLORS = {
+    DARK: '#020617',
+    NAVY: '#0a1a3a',
+    BLUE: '#1e40ff',
+    CYAN: '#38bdf8',
+    LIGHT: '#a5f3fc',
+};
 
 /**
  * Standardized OpenZero Embed wrapper.
@@ -8,14 +18,13 @@ import { config } from '../config.js';
 export class OpenZeroEmbed extends EmbedBuilder {
     /**
      * @param {import('discord.js').EmbedData} [data] - Initial embed data.
-     * @param {import('discord.js').BaseInteraction|import('discord.js').Message} [context] - Context to extract bot icon.
      */
-    constructor(data = {}, context = null) {
+    constructor(data = {}) {
         super(data);
 
         // Set default brand color if not provided
         if (!this.data.color) {
-            this.setColor('#58c2e6');
+            this.setColor(COLORS.CYAN);
         }
 
         // Clear default footer and timestamp for the new standard layout

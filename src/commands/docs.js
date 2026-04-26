@@ -38,7 +38,7 @@ export default {
             const data = await APIClient.get(endpoint);
 
             const user = isInteraction ? context.user : context.author;
-            const embed = new OpenZeroEmbed({}, context)
+            const embed = new OpenZeroEmbed()
                 .setStandardLayout(user, '/docs', `Docs Search: ${query}`)
                 .setDescription('Synthesized result below: ')
                 .setAISummary(data.answer);

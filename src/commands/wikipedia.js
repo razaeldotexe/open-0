@@ -30,7 +30,7 @@ export default {
             const data = await APIClient.post('/research/wikipedia', { query, lang });
             const user = isInteraction ? context.user : context.author;
 
-            const embed = new OpenZeroEmbed({}, context)
+            const embed = new OpenZeroEmbed()
                 .setStandardLayout(user, '/wikipedia', data.title)
                 .setDescription(`${data.summary} `)
                 .setAISummary(data.ai_summary);

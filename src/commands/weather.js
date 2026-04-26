@@ -48,17 +48,14 @@ export default {
                 : `/weather?lat=${lat}&lon=${lon}`;
             const data = await APIClient.get(endpoint);
 
-            const embed = new OpenZeroEmbed(
-                {
-                    title: await t(
-                        'commands.weather.current_title',
-                        { location: data.location.name },
-                        guildId
-                    ),
-                    description: data.current.condition,
-                },
-                context
-            );
+            const embed = new OpenZeroEmbed({
+                title: await t(
+                    'commands.weather.current_title',
+                    { location: data.location.name },
+                    guildId
+                ),
+                description: data.current.condition,
+            });
 
             embed.addFields(
                 {

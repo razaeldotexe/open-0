@@ -21,7 +21,7 @@ export default {
         const limit = (isInteraction ? context.options.getInteger('limit') : 5) || 5;
 
         if (!query) {
-            const msg = await t('commands.product.query_required', {}, guildId);
+            const msg = await t('commands.aisearch.query_required', {}, guildId);
             return isInteraction
                 ? context.reply({ content: msg, ephemeral: true })
                 : context.reply(msg);
@@ -31,35 +31,32 @@ export default {
 
         try {
             const lang = await getLanguage(guildId);
-            const products = await APIClient.post('/ai/search', { query, limit, lang });
+            const response = await APIClient.post('/ai/search', { query, limit, lang });
+            const results = response.results || [];
+            const aiSummary = response.ai_summary;
 
-            if (!Array.isArray(products) || products.length === 0) {
-                const noResultsMsg = await t('commands.product.no_results', { query }, guildId);
+            if (results.length === 0 && !aiSummary) {
+                const noResultsMsg = await t('commands.aisearch.no_results', { query }, guildId);
                 return isInteraction
                     ? context.editReply(noResultsMsg)
                     : context.reply(noResultsMsg);
             }
 
             const user = isInteraction ? context.user : context.author;
-            const embed = new OpenZeroEmbed({}, context)
-                .setStandardLayout(user, '/aisearch', `AI Search Results: ${query}`)
-                .setDescription(`${await t('commands.product.searching', {}, guildId)} `);
+            const embed = new OpenZeroEmbed()
+                .setStandardLayout(user, '/aisearch', `AI Search: ${query}`)
+                .setAISummary(aiSummary);
 
-            for (const [i, p] of products.entries()) {
-                const priceStr = p.price
-                    ? `\n**${await t('commands.product.price', {}, guildId)}**: ${p.price}`
-                    : '';
-                const sourceStr = p.source_url
-                    ? `\n[${p.source_name || 'Link'}](${p.source_url})`
-                    : '';
-
-                embed.addFields({
-                    name: `${i + 1}. ${p.name}`,
-                    value: `${p.description}${priceStr}${sourceStr}`,
-                });
+            if (results.length > 0) {
+                for (const [i, r] of results.entries()) {
+                    embed.addFields({
+                        name: `${i + 1}. ${r.title}`,
+                        value: `${r.snippet.substring(0, 300)}... [Link](${r.url})`,
+                    });
+                }
             }
 
-            embed.setFooter({ text: await t('commands.product.footer', {}, guildId) });
+            embed.setFooter({ text: await t('commands.aisearch.footer', {}, guildId) });
 
             return isInteraction
                 ? context.editReply({ embeds: [embed] })

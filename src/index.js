@@ -27,7 +27,6 @@ import {
     getTicketsToCleanup,
     closeTicket,
 } from './utils/database.js';
-import { initMonitorTask } from './utils/monitor_task.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,9 +83,6 @@ client.once(Events.ClientReady, async (readyClient) => {
     readyClient.user.setActivity('Open Data Research', {
         type: ActivityType.Listening,
     });
-
-    // Initialize monitoring task
-    initMonitorTask(readyClient);
 
     // Background Task: Check for expired or closed tickets every 10 minutes
     setInterval(async () => {

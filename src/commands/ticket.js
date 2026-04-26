@@ -29,13 +29,10 @@ export default {
             const setupDesc = await t('commands.ticket.setup_desc', {}, guildId);
             const setupBtnLabel = await t('commands.ticket.setup_btn', {}, guildId);
 
-            const embed = new OpenZeroEmbed(
-                {
-                    title: setupTitle,
-                    description: setupDesc,
-                },
-                interaction
-            );
+            const embed = new OpenZeroEmbed({
+                title: setupTitle,
+                description: setupDesc,
+            });
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()

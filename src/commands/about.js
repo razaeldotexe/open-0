@@ -7,13 +7,10 @@ export default {
     async execute(context) {
         const guildId = context.guildId;
 
-        const embed = new OpenZeroEmbed(
-            {
-                title: await t('commands.about.title', {}, guildId),
-                description: await t('commands.about.desc', {}, guildId),
-            },
-            context
-        );
+        const embed = new OpenZeroEmbed({
+            title: await t('commands.about.title', {}, guildId),
+            description: await t('commands.about.desc', {}, guildId),
+        });
 
         embed.addFields(
             {

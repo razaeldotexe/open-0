@@ -118,7 +118,7 @@ export default {
             }
 
             const user = interaction.user;
-            const embed = new OpenZeroEmbed({}, interaction)
+            const embed = new OpenZeroEmbed()
                 .setStandardLayout(user, '/code ' + subcommand, title)
                 .setDescription(`${result.substring(0, 4000)} `);
 

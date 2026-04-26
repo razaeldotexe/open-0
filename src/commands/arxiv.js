@@ -50,7 +50,7 @@ export default {
             const generateEmbed = async (index) => {
                 const paper = papers[index];
                 const user = isInteraction ? context.user : context.author;
-                const embed = new OpenZeroEmbed({}, context)
+                const embed = new OpenZeroEmbed()
                     .setStandardLayout(user, '/arxiv', paper.title)
                     .setDescription(`${paper.summary.substring(0, 1000)}... `);
 

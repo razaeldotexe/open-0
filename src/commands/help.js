@@ -11,13 +11,10 @@ export default {
         const guildId = context.guildId;
         const client = context.client;
 
-        const embed = new OpenZeroEmbed(
-            {
-                title: await t('commands.help.title', {}, guildId),
-                description: await t('commands.help.desc_text', {}, guildId),
-            },
-            context
-        );
+        const embed = new OpenZeroEmbed({
+            title: await t('commands.help.title', {}, guildId),
+            description: await t('commands.help.desc_text', {}, guildId),
+        });
 
         const commands = client.commands;
         const uniqueCommands = new Set(commands.values());

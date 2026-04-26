@@ -125,51 +125,6 @@ export async function getTicketsToCleanup() {
     }
 }
 
-/**
- * Save or update an app monitor.
- */
-export async function saveMonitor(monitorData) {
-    if (!db) return;
-    try {
-        await db
-            .collection('monitors')
-            .updateOne(
-                { guildId: monitorData.guildId, source: monitorData.source },
-                { $set: { ...monitorData, updatedAt: new Date() } },
-                { upsert: true }
-            );
-        Logger.info(`[Database] Monitor saved: ${monitorData.source} in ${monitorData.guildId}`);
-    } catch (error) {
-        Logger.error('[Database] Error saving monitor:', error);
-    }
-}
-
-/**
- * Get all active monitors.
- */
-export async function getMonitors() {
-    if (!db) return [];
-    try {
-        return await db.collection('monitors').find({}).toArray();
-    } catch (error) {
-        Logger.error('[Database] Error fetching monitors:', error);
-        return [];
-    }
-}
-
-/**
- * Delete a specific monitor.
- */
-export async function deleteMonitor(guildId, source) {
-    if (!db) return;
-    try {
-        await db.collection('monitors').deleteOne({ guildId, source });
-        Logger.info(`[Database] Monitor deleted: ${source} in ${guildId}`);
-    } catch (error) {
-        Logger.error('[Database] Error deleting monitor:', error);
-    }
-}
-
 export function getDb() {
     return db;
 }

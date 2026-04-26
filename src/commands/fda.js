@@ -75,7 +75,7 @@ export default {
             const generateEmbed = async (index) => {
                 const item = results[index];
                 const user = isInteraction ? context.user : context.author;
-                const embed = new OpenZeroEmbed({}, context)
+                const embed = new OpenZeroEmbed()
                     .setStandardLayout(
                         user,
                         '/fda',

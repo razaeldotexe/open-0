@@ -39,13 +39,10 @@ export default {
 
             const generateEmbed = async (index) => {
                 const font = fonts[index];
-                const embed = new OpenZeroEmbed(
-                    {
-                        title: font.patchedName,
-                        description: await t('commands.nerdfont.click_to_download', {}, guildId),
-                    },
-                    context
-                );
+                const embed = new OpenZeroEmbed({
+                    title: font.patchedName,
+                    description: await t('commands.nerdfont.click_to_download', {}, guildId),
+                });
 
                 embed.addFields(
                     {
